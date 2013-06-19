@@ -24,10 +24,6 @@ destinationType=navigator.camera.DestinationType;
 
 
 }
-
-        
-      
-
  
   function onPhotoDataSuccess(imageData) {
       // Descomenta esta linea para ver la imagen codificada en base64
@@ -67,21 +63,21 @@ destinationType=navigator.camera.DestinationType;
       largeImage.src = imageURI;
     }
 
-    // Un botón llamara a esta función
+    // Un botï¿½n llamara a esta funciï¿½n
     //
     function capturePhoto() {
       // Toma la imagen y la retorna como una string codificada en base64
       navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 50 });
     }
 
-    // Un botón llamara a esta función
+    // Un botï¿½n llamara a esta funciï¿½n
     //
     function capturePhotoEdit() {
       // Toma la imagen, permite editarla y la retorna como una string codificada en base64
       navigator.camera.getPicture(onPhotoDataSuccess, onFail, { quality: 20, allowEdit: true });
     }
 
-    // Un botón llamara a esta función
+    // Un botï¿½n llamara a esta funciï¿½n
     //
     function getPhoto(source) {
       // Retorna la ruta del fichero de imagen desde el origen especificado
@@ -93,9 +89,48 @@ destinationType=navigator.camera.DestinationType;
     // Llamado cuando algo malo ocurre
     //
     function onFail(message) {
-      alert('Ocurrió un error: ' + message);
+      alert('Ocurriï¿½ un error: ' + message);
     }
 
+function captureSuccess(mediaFiles) {
+        var i, len;
+        for (i = 0, len = mediaFiles.length; i < len; i += 1) {
+            uploadFile(mediaFiles[i]);
+        }       
+    }
+
+    // Llamado si ocurre algÃºn error
+    // 
+    function captureError(error) {
+        var msg = 'OcurriÃ³ un error mientras se capturaba: ' + error.code;
+        navigator.notification.alert(msg, null, 'Uh oh!');
+    }
+
+    // Un botÃ³n llamara esta funciÃ³n
+    //
+    function captureVideo() {
+        // Inicia la aplicaciÃ³n de grabaciÃ³n
+        // y permite capturar hasta 2 clips de vÃ­deo
+        navigator.device.capture.captureVideo(captureSuccess, captureError, {limit: 2});
+    }
+
+    // Sube los ficheros al servidor
+    function uploadFile(mediaFile) {
+        var ft = new FileTransfer(),
+            path = mediaFile.fullPath,
+            name = mediaFile.name;
+
+        ft.upload(path,
+            "http://my.domain.com/upload.php",
+            function(result) {
+                console.log('Subida correcta: ' + result.responseCode);
+                console.log(result.bytesSent + ' bytes enviados');
+            },
+            function(error) {
+                console.log('Error en la subida del fichero ' + path + ': ' + error.code);
+            },
+            { fileName: name });   
+    }
 
 
 
@@ -108,6 +143,8 @@ destinationType=navigator.camera.DestinationType;
         
 
 <button onclick="capturePhoto();">Capturar foto</button> <br>
+<button onclick="captureVideo();">Capturar vÃ­deo</button> <br>
+
 
 <button onclick="getPhoto(pictureSource.SAVEDPHOTOALBUM);">Album de fotos</button><br>
 
